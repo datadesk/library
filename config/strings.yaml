@@ -19,7 +19,7 @@ landing:
       label: By topic
       style: button
     - tag: featured
-      label: Useful docs
+      label: Top docs
       style: docs
 
 
