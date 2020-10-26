@@ -92,6 +92,7 @@ router.use((req, res, next) => {
 })
 
 function isAuthorized(user) {
+  console.log(user);
   const [{value: userEmail = ''} = {}] = user.emails || []
   const [userDomain] = userEmail.split('@').slice(-1)
   const checkRegexEmail = () => {
