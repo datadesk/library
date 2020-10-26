@@ -56,7 +56,7 @@ passport.deserializeUser((obj, done) => done(null, obj))
 //  prompt: 'select_account'
 //}))
 
-app.get('/login', passport.authorize('Slack'));
+router.get('/login', passport.authorize('Slack'));
 
 router.get('/logout', (req, res) => {
   req.logout()
@@ -67,7 +67,7 @@ router.get('/logout', (req, res) => {
 //  res.redirect(req.session.authRedirect || '/')
 //})
 
-app.get('/auth/redirect',
+router.get('/auth/redirect',
   passport.authenticate('Slack', { failureRedirect: '/login' }),
   (req, res) => res.redirect('/') // Successful authentication, redirect home.
 );
