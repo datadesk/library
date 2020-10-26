@@ -1,26 +1,15 @@
 'use strict'
 
-console.log("OVERRIDE USER AUTH BOOTING");
-
 const passport = require('passport')
 const session = require('express-session')
 const md5 = require('md5')
 const SlackStrategy = require('passport-slack-oauth2').Strategy;
-//const GoogleStrategy = require('passport-google-oauth20')
 
 const log = require('./logger')
 const {stringTemplate: template} = require('./utils')
 
 const router = require('express-promise-router')()
 const domains = new Set(process.env.APPROVED_DOMAINS.split(/,\s?/g))
-
-//passport.use(new GoogleStrategy.Strategy({
-//  clientID: process.env.GOOGLE_CLIENT_ID,
-//  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//  callbackURL: '/auth/redirect',
-//  userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
-//  passReqToCallback: true
-//}, (request, accessToken, refreshToken, profile, done) => done(null, profile)))
 
 passport.use(new SlackStrategy({
     clientID: process.env.SLACK_CLIENT_ID,
@@ -49,24 +38,12 @@ router.use(passport.session())
 passport.serializeUser((user, done) => done(null, user))
 passport.deserializeUser((obj, done) => done(null, obj))
 
-//router.get('/login', passport.authenticate('google', {
-//  scope: [
-//    'https://www.googleapis.com/auth/userinfo.email',
-//    'https://www.googleapis.com/auth/userinfo.profile'
-//  ],
-//  prompt: 'select_account'
-//}))
-
 router.get('/login', passport.authorize('Slack'));
 
 router.get('/logout', (req, res) => {
   req.logout()
   res.redirect('/')
 })
-
-//router.get('/auth/redirect', passport.authenticate('google'), (req, res) => {
-//  res.redirect(req.session.authRedirect || '/')
-//})
 
 router.get('/auth/redirect',
   passport.authenticate('Slack', { failureRedirect: '/login' }),
@@ -104,7 +81,6 @@ function setUserInfo(req) {
     }
     return
   }
-  console.log(req.session.passport.user)
   req.userInfo = req.userInfo ? req.userInfo : {
     email: req.session.passport.user.displayName,
     userId: req.session.passport.user.user.id,
