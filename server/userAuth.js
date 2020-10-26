@@ -3,7 +3,7 @@
 const passport = require('passport')
 const session = require('express-session')
 const md5 = require('md5')
-const SlackStrategy = require('passport-slack-oauth2').Strategy;
+const GoogleStrategy = require('passport-google-oauth20')
 
 const log = require('./logger')
 const {stringTemplate: template} = require('./utils')
@@ -11,18 +11,13 @@ const {stringTemplate: template} = require('./utils')
 const router = require('express-promise-router')()
 const domains = new Set(process.env.APPROVED_DOMAINS.split(/,\s?/g))
 
-passport.use(new SlackStrategy({
-    clientID: process.env.SLACK_CLIENT_ID,
-    clientSecret: process.env.SLACK_CLIENT_SECRET,
-    skipUserProfile: false,
-    callbackURL: process.env.SLACK_CALLBACK_URL,
-    scope: ['identity.basic', 'identity.email', 'identity.avatar', 'identity.team']
-  },
-  (accessToken, refreshToken, profile, done) => {
-    // optionally persist user data into a database
-    done(null, profile);
-  }
-));
+passport.use(new GoogleStrategy.Strategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: '/auth/redirect',
+  userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
+  passReqToCallback: true
+}, (request, accessToken, refreshToken, profile, done) => done(null, profile)))
 
 router.use(session({
   secret: process.env.SESSION_SECRET,
@@ -38,17 +33,22 @@ router.use(passport.session())
 passport.serializeUser((user, done) => done(null, user))
 passport.deserializeUser((obj, done) => done(null, obj))
 
-router.get('/login', passport.authorize('Slack'));
+router.get('/login', passport.authenticate('google', {
+  scope: [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile'
+  ],
+  prompt: 'select_account'
+}))
 
 router.get('/logout', (req, res) => {
   req.logout()
   res.redirect('/')
 })
 
-router.get('/auth/redirect',
-  passport.authenticate('Slack', { failureRedirect: '/login' }),
-  (req, res) => res.redirect('/') // Successful authentication, redirect home.
-);
+router.get('/auth/redirect', passport.authenticate('google'), (req, res) => {
+  res.redirect(req.session.authRedirect || '/')
+})
 
 router.use((req, res, next) => {
   const isDev = process.env.NODE_ENV === 'development'
@@ -69,7 +69,15 @@ router.use((req, res, next) => {
 })
 
 function isAuthorized(user) {
-  return domains.has(user.team.domain);
+  const [{value: userEmail = ''} = {}] = user.emails || []
+  const [userDomain] = userEmail.split('@').slice(-1)
+  const checkRegexEmail = () => {
+    const domainsArray = Array.from(domains)
+    for (const domain of domainsArray) {
+      if (userDomain.match(domain)) return true
+    }
+  }
+  return domains.has(userDomain) || domains.has(userEmail) || checkRegexEmail()
 }
 
 function setUserInfo(req) {
@@ -82,9 +90,9 @@ function setUserInfo(req) {
     return
   }
   req.userInfo = req.userInfo ? req.userInfo : {
-    email: req.session.passport.user.displayName,
-    userId: req.session.passport.user.user.id,
-    analyticsUserId: md5(req.session.passport.user.user.id + 'library')
+    email: req.session.passport.user.emails[0].value,
+    userId: req.session.passport.user.id,
+    analyticsUserId: md5(req.session.passport.user.id + 'library')
   }
 }
 
