@@ -108,7 +108,7 @@ function setUserInfo(req) {
   req.userInfo = req.userInfo ? req.userInfo : {
     email: req.session.passport.user.displayName,
     userId: req.session.passport.user.user.id,
-    analyticsUserId: md5(req.session.passport.user.id + 'library')
+    analyticsUserId: md5(req.session.passport.user.user.id + 'library')
   }
 }
 
