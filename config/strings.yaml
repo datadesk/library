@@ -52,10 +52,10 @@ folder:
     kicker: !!js/function (title) => `Pages in ${title}`
   # partials/sectionList
   sectionList:
-    heading: "Table of Contents:"
+    heading: "Table of contents"
   #partials/siblingList
   siblingList:
-    heading: Related Docs
+    heading: Related docs
 
 # playlists/default
 playlist:
