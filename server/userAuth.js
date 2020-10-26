@@ -92,10 +92,10 @@ router.use((req, res, next) => {
 })
 
 function isAuthorized(user) {
-  console.log(user);
+  console.log(user.team.domain);
   console.log(domains);
-  console.log(domains.has(user.domain))
-  return domains.has(user.domain);
+  console.log(domains.has(user.team.domain))
+  return domains.has(user.team.domain);
 }
 
 function setUserInfo(req) {
