@@ -6,7 +6,7 @@ branding:
   name: Library
   prettyName: Team Library
   org: Your Organization
-  icon: /assets/images/android-chrome-192x192.png
+  icon: /assets/images/icon-logo.svg
   favicon: /assets/images/favicon.ico
 
 # pages/categories, pages/index, partials/search
