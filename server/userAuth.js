@@ -25,8 +25,9 @@ const domains = new Set(process.env.APPROVED_DOMAINS.split(/,\s?/g))
 passport.use(new SlackStrategy({
     clientID: process.env.SLACK_CLIENT_ID,
     clientSecret: process.env.SLACK_CLIENT_SECRET,
-    skipUserProfile: false, // default
-    scope: ['identity.basic', 'identity.email', 'identity.avatar', 'identity.team'] // default
+    skipUserProfile: false,
+    callbackURL: process.env.SLACK_CALLBACK_URL,
+    scope: ['identity.basic', 'identity.email', 'identity.avatar', 'identity.team']
   },
   (accessToken, refreshToken, profile, done) => {
     // optionally persist user data into a database
