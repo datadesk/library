@@ -16,10 +16,10 @@ landing:
   quickLink: <a href="/get-started">Get Started.</a>
   modules:
     - tag: team
-      label: Find by team
+      label: By topic
       style: button
     - tag: featured
-      label: Useful Docs
+      label: Useful docs
       style: docs
 
 
