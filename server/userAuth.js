@@ -47,7 +47,7 @@ router.get('/logout', (req, res) => {
 
 router.get('/auth/redirect',
   passport.authenticate('Slack', { failureRedirect: '/login' }),
-  (req, res) => res.redirect('/') // Successful authentication, redirect home.
+  (req, res) => res.redirect(req.session.authRedirect || '/')
 );
 
 router.use((req, res, next) => {
