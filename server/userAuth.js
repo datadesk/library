@@ -92,9 +92,6 @@ router.use((req, res, next) => {
 })
 
 function isAuthorized(user) {
-  console.log(user.team.domain);
-  console.log(domains);
-  console.log(domains.has(user.team.domain))
   return domains.has(user.team.domain);
 }
 
@@ -109,8 +106,8 @@ function setUserInfo(req) {
   }
   console.log(req.session.passport.user)
   req.userInfo = req.userInfo ? req.userInfo : {
-    email: req.session.passport.user.emails[0].value,
-    userId: req.session.passport.user.id,
+    email: req.session.passport.user.displayName,
+    userId: req.session.passport.user.user.id,
     analyticsUserId: md5(req.session.passport.user.id + 'library')
   }
 }
