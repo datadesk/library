@@ -102,7 +102,7 @@ function isAuthorized(user) {
   console.log("isAuthorized");
   console.log(user);
   console.log(domains);
-  const [{value: userEmail = ''} = {}] = user.emails || user.user.email || []
+  const [{value: userEmail = ''} = {}] = user.emails || [user.user.email] || []
   console.log("userEmail", userEmail);
   const [userDomain] = userEmail.split('@').slice(-1) || user.team.domain;
   console.log("userDomain", user.team.domain);
