@@ -101,7 +101,7 @@ router.use((req, res, next) => {
 function isAuthorized(user) {
   console.log("isAuthorized");
   console.log(user);
-  console.log(domains);
+  console.log("domains", domains);
   const [{value: userEmail = ''} = {}] = user.emails || [user.user.email] || []
   console.log("userEmail", userEmail);
   const [userDomain] = userEmail.split('@').slice(-1) || user.team.domain;
@@ -112,7 +112,7 @@ function isAuthorized(user) {
       if (userDomain.match(domain)) return true
     }
   }
-  console.log("checkRegexEmail", checkRegexEmail());
+  console.log("domains.has(userDomain)", domains.has(userDomain));
   return domains.has(userDomain) || domains.has(userEmail) || checkRegexEmail()
 }
 
