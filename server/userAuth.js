@@ -103,7 +103,8 @@ function isAuthorized(user) {
   console.log(user);
   console.log(domains);
   const [{value: userEmail = ''} = {}] = user.emails || []
-  const [userDomain] = userEmail.split('@').slice(-1)
+  console.log("userEmail", userEmail);
+  const [userDomain] = userEmail.split('@').slice(-1) || user.domain
   console.log("userDomain", userDomain);
   const checkRegexEmail = () => {
     const domainsArray = Array.from(domains)
