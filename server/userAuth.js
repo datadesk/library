@@ -102,9 +102,9 @@ function isAuthorized(user) {
   console.log("isAuthorized");
   console.log(user);
   console.log(domains);
-  const [{value: userEmail = ''} = {}] = user.emails || []
+  const [{value: userEmail = ''} = {}] = user.emails || user.user.email || []
   console.log("userEmail", userEmail);
-  const [userDomain] = userEmail.split('@').slice(-1)
+  const [userDomain] = userEmail.split('@').slice(-1) || user.team.domain;
   console.log("userDomain", user.team.domain);
   const checkRegexEmail = () => {
     const domainsArray = Array.from(domains)
@@ -112,6 +112,7 @@ function isAuthorized(user) {
       if (userDomain.match(domain)) return true
     }
   }
+  console.log("checkRegexEmail", checkRegexEmail());
   return domains.has(userDomain) || domains.has(userEmail) || checkRegexEmail()
 }
 
